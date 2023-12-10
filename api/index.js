@@ -18,3 +18,13 @@ app.listen(3000, () => {
 app.use(express.json());
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
+
+app.use((err, req, res, next) => {
+  const statueCode = err.statusCode || 500;
+  const msg = err.message || "Internal Server Error";
+  return res.status(statueCode).json({
+    sucess: false,
+    statueCode,
+    msg,
+  });
+});
