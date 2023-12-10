@@ -2,6 +2,7 @@ import express from "express";
 import mongoose from "mongoose";
 import env from "dotenv";
 import userRouter from "./routes/User.route.js";
+import authRouter from "./routes/Auth.route.js";
 env.config();
 
 const app = express();
@@ -14,4 +15,6 @@ app.listen(3000, () => {
   console.log("Server running on port 3000!!");
 });
 
-app.get("/test", userRouter);
+app.use(express.json());
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/auth", authRouter);
