@@ -11,7 +11,7 @@ export const signup = async (req, res, next) => {
 
   const newUser = new User({
     username: username,
-    email,
+    email: email,
     password: hashedPassword,
   });
   try {
@@ -27,8 +27,10 @@ export const signin = async (req, res, next) => {
   try {
     const validUser = await User.findOne({ email });
     if (!validUser) return next(errorHandler(404, "User not found"));
-    const validPassword = bcrypt.compare(password, validUser.password);
+    const validPassword = await bcrypt.compare(password, validUser.password);
     if (!validPassword) return next(errorHandler(404, "wrong credentials"));
+    console.log(validPassword);
+    console.log("here");
     const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET);
     const { password: pass, ...rest } = validUser._doc;
 
