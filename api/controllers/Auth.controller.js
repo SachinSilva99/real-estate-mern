@@ -8,6 +8,17 @@ export const signup = async (req, res, next) => {
     await newUser.save();
     res.status(201).json("user created");
   } catch (err) {
-    next(errorHandler(550, "error from function"));
+    next(err);
+  }
+};
+
+export const signin = async (req, res, next) => {
+  const { email, password } = req.body;
+  try {
+    const validUser = await User.findOne({ email });
+    if (!validUser) return;
+    res.status(201).json("user created");
+  } catch (err) {
+    next(err);
   }
 };

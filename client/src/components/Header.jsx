@@ -17,14 +17,14 @@ const Header = () => {
           <FaSearch className="text-slate-400" />
         </form>
         <ul className="flex gap-4 text-slate-700">
-          <Link>
+          <Link to="/">
             <li className="hidden sm:inline">Home</li>
           </Link>
-          <Link>
+          <Link to="/about">
             {" "}
             <li className="hidden sm:inline">About</li>
           </Link>
-          <Link>
+          <Link to="/sign-in">
             <li className="">Sign in</li>
           </Link>
         </ul>

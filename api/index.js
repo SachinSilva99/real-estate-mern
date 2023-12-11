@@ -20,11 +20,11 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/auth", authRouter);
 
 app.use((err, req, res, next) => {
-  const statueCode = err.statusCode || 500;
-  const msg = err.message || "Internal Server Error";
-  return res.status(statueCode).json({
-    sucess: false,
-    statueCode,
-    msg,
+  const statusCode = err.statusCode || 500;
+  const message = err.message || "Internal Server Error";
+  return res.status(statusCode).json({
+    success: false,
+    statusCode,
+    message,
   });
 });
