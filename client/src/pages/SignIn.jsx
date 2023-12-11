@@ -33,11 +33,11 @@ const SignIn = () => {
     const data = await res.json();
 
     if (data.success === false) {
-      dispatch(signInFailure());
+      dispatch(signInFailure(data.message));
       return;
     }
 
-    dispatch(signInSuccess());
+    dispatch(signInSuccess(data));
     navigate("/");
     console.log(data);
   };
