@@ -1,60 +1,71 @@
-import { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 
 const SignUp = () => {
-  const usernameRef = useRef("");
-  const passwordRef = useRef("");
-  const emailRef = useRef("");
+  const [formData, setFormData] = useState("");
+
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+  console.log(formData);
   const handleSignUpOnClick = async (e) => {
     e.preventDefault();
     setLoading(true);
-    const username = usernameRef.current.value;
-    const password = passwordRef.current.value;
-    const email = emailRef.current.value;
 
     const res = await fetch("/api/v1/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, email, password }),
+      body: JSON.stringify(formData),
     });
+
     const data = await res.json();
+
     if (data.success === false) {
       setError(data.message);
       setLoading(false);
-
       return;
     }
+
     setError(null);
     setLoading(false);
     navigate("/sign-in");
     console.log(data);
   };
+
   return (
     <div className="m-6 max-w-lg mx-auto">
       <h1 className="text-3xl text-center font-semibold my-8">Sign Up</h1>
-      <form className=" flex flex-col gap-6 ">
+      <form className="flex flex-col gap-6">
         <input
           className="border p-3 rounded-md focus:outline-none"
           type="text"
-          id="username"
+          name="username"
           placeholder="username"
-          ref={usernameRef}
+          id="username"
+          onChange={handleInputChange}
         />
         <input
           className="border p-3 rounded-md focus:outline-none"
           type="email"
-          id="email"
+          name="email"
           placeholder="email"
-          ref={emailRef}
+          id="email"
+          onChange={handleInputChange}
         />
         <input
           className="border p-3 rounded-md focus:outline-none"
           type="password"
+          name="password"
           placeholder="password"
-          ref={passwordRef}
+          id="password"
+          onChange={handleInputChange}
         />
         <button
           onClick={handleSignUpOnClick}
