@@ -53,7 +53,6 @@ const SignUp = () => {
         <input
           className="border p-3 rounded-md focus:outline-none"
           type="password"
-          id="password"
           placeholder="password"
           ref={passwordRef}
         />
