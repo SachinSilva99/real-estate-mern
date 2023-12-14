@@ -1,8 +1,82 @@
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+import { useState } from "react";
+import { app } from "../Firebase";
+
 const CreateListing = () => {
+  const [files, setFiles] = useState({});
+  const [imageUploadError, setImageUploadError] = useState(false);
+  const [formData, setFormData] = useState({
+    imageUrls: [],
+  });
+  const [uploading, setUploading] = useState(false);
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file;
+      const storageRef = ref(storage, fileName);
+      const uploadTask = uploadBytesResumable(storageRef, file);
+      uploadTask.on(
+        "state_change",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log(progress);
+        },
+        (err) => {
+          reject(err);
+        },
+        () => {
+          getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+  const handleImageSubmit = (e) => {
+    e.preventDefault();
+    if (files.length > 0 && files.length + formData.imageUrls.length < 7) {
+      const promies = [];
+      for (let i = 0; i < files.length; i++) {
+        setUploading(true);
+        setImageUploadError(false);
+        promies.push(storeImage(files[i]));
+      }
+      Promise.all(promies)
+        .then((url) => {
+          setFormData({
+            ...formData,
+            imageUrls: formData.imageUrls.concat(url),
+          });
+          setImageUploadError(false);
+          setUploading(false);
+        })
+        .catch((err) => {
+          setUploading(false);
+          setImageUploadError("Image upload failed, 10mb max per image");
+        });
+    } else {
+      setUploading(false);
+
+      setImageUploadError("You can only upload 6 images");
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    setFormData({
+      ...formData,
+      imageUrls: formData.imageUrls.filter((url, i) => i !== index),
+    });
+  };
+
   return (
     <main className="p-3 max-w-6xl mx-auto">
       <h1 className="text-3xl my-7 text-center">Create a Listing</h1>
-
       <form className="flex  sm:flex-row flex-col">
         <div className="left flex flex-col gap-4 flex-1 p-3">
           <input
@@ -109,10 +183,43 @@ const CreateListing = () => {
             </span>
           </p>
           <div className="flex gap-4 flex-col">
-            <input id="images" type="file" accept="image/*" multiple />
-            <button className="hover:shadow-lg bg-blue-500 py-3 px-10 text-white w-full">
-              Upload
+            <input
+              onChange={(e) => setFiles(e.target.files)}
+              id="images"
+              type="file"
+              accept="image/*"
+              multiple
+            />
+            <button
+              disabled={uploading}
+              onClick={handleImageSubmit}
+              className="hover:shadow-lg bg-blue-500 py-3 px-10 text-white w-full"
+            >
+              {uploading ? "Uploading..." : "Upload"}
             </button>
+            <p className="text-red-500">
+              {imageUploadError && imageUploadError}
+            </p>
+            {formData.imageUrls.length > 0 &&
+              formData.imageUrls.map((url, index) => (
+                <div
+                  className="flex justify-between gap-4 items-center"
+                  key={url}
+                >
+                  <img
+                    src={url}
+                    alt="listing image"
+                    className="w-48 h-40 object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveImage(index)}
+                    className="rounded-2xl px-6 h-10 self-center text-white bg-red-500"
+                  >
+                    Delete
+                  </button>
+                </div>
+              ))}
           </div>
           <button className="p-3 bg-slate-600 text-white">
             Create Listing
