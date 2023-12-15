@@ -22,6 +22,7 @@ import {
   signoutUserSuccess,
 } from "../redux/user/UserSlice";
 import { Link } from "react-router-dom";
+import Listing from "../../../api/models/Listing.model";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
@@ -30,7 +31,9 @@ const Profile = () => {
   const [fileUploadEr, setFileUploadEr] = useState(false);
   const [filePercentage, setFilePercantage] = useState(0);
   const [formData, setFormData] = useState({});
+  const [userListings, setUserListings] = useState([]);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [showListingsError, setShowListingsError] = useState(false);
   const dispatch = useDispatch();
   console.log(formData);
   const handleUpload = (file) => {
@@ -117,6 +120,20 @@ const Profile = () => {
       dispatch(signoutUserSuccess(data));
     } catch (err) {}
   };
+  const handleShowListings = async () => {
+    try {
+      setShowListingsError(false);
+      const res = await fetch(`/api/v1/user/listings/${currentUser._id}`);
+      const data = await res.json();
+      if (data.success === false) {
+        setShowListingsError(true);
+        return;
+      }
+      setUserListings(data);
+    } catch (err) {
+      setShowListingsError(true);
+    }
+  };
   return (
     <div className="p-3 max-w-lg mx-auto">
       <h1 className="text-2xl font-semibold text-center my-6">Profile</h1>
@@ -198,6 +215,45 @@ const Profile = () => {
       <p className="text-green-700">
         {updateSuccess ? "User updated successfully!!!" : ""}
       </p>
+      <button onClick={handleShowListings} className="text-green-600 w-full">
+        Show Listings
+      </button>
+      <p className="text-red-500 mt-5 cursor-pointer">
+        {showListingsError ? "Error showing lisiting" : ""}
+      </p>
+      {userListings && userListings.length > 0 && (
+        <div className="flex gap-4 flex-col">
+          <h1 className="text-center my-7 text-3xl ">Your listings</h1>
+          {userListings.map((listing) => (
+            <div
+              key={listing._id}
+              className="flex border-4 p-3 rounded-xl justify-between items-center gap-4"
+            >
+              <Link to={`/listing/${listing._id}`}>
+                <img
+                  className="h-16 w-20 object-contain rounded-lg"
+                  src={listing.imageUrls[0]}
+                  alt=""
+                />
+              </Link>
+              <Link
+                className="font-semibold hover:underline truncate flex-1"
+                to={`/listing/${listing._id}`}
+              >
+                <p>{listing.name}</p>
+              </Link>
+              <div className="flex gap-2">
+                <button className="bg bg-red-500 text-white rounded-xl py-3 px-6">
+                  delete
+                </button>
+                <button className="bg bg-yellow-500 text-white rounded-xl py-3 px-6">
+                  edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
