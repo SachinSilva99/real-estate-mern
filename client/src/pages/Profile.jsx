@@ -21,7 +21,7 @@ import {
   signoutUserFailure,
   signoutUserSuccess,
 } from "../redux/user/UserSlice";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { currentUser, loading, error } = useSelector((state) => state.user);
