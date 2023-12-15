@@ -262,9 +262,11 @@ const Profile = () => {
                 >
                   delete
                 </button>
-                <button className="bg bg-yellow-500 text-white rounded-xl py-3 px-6">
-                  edit
-                </button>
+                <Link to={`/update-listing/${listing._id}`}>
+                  <button className="bg bg-yellow-500 text-white rounded-xl py-3 px-6">
+                    edit
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
