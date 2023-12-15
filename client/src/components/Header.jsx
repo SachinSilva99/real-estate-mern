@@ -2,7 +2,10 @@ import { FaSearch } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 const Header = () => {
-  const currentUser = useSelector((state) => state.user.currentUser);
+
+
+  let currentUser = useSelector((state) => state.user.currentUser);
+
   return (
     <header className="bg-slate-300">
       <div className="flex justify-between items-center max-w-6xl mx-auto p-3">

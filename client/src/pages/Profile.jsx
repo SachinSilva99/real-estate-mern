@@ -82,6 +82,7 @@ const Profile = () => {
         return;
       }
       dispatch(updateUserSuccess(data));
+
       setUpdateSuccess(true);
     } catch (err) {
       dispatch(updateUserFailure(err.message));
@@ -165,7 +166,7 @@ const Profile = () => {
         <input
           type="text"
           placeholder="password"
-          id="email"
+          id="password"
           className="border p-3"
           onChange={handleChange}
         />
